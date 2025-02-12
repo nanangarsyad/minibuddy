@@ -1,0 +1,17 @@
+spring:
+  application:
+    name: minibuddy-local
+  r2dbc:
+    url: ${DB_URL:r2dbc:postgresql://localhost:5432/minibuddy_db}
+    username: ${DB_USERNAME:minibuddy}
+    password: ${DB_PASSWORD:minibuddy}
+  flyway:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/minibuddy_db}
+    user: ${DB_USER:minibuddy}
+    password: ${DB_PASSWORD:minibuddy}
+    locations: classpath:db/migration
+    baseline-on-migrate: true
+    validate-on-migrate: true
+
+server:
+  port: ${SERVER_PORT:8080}

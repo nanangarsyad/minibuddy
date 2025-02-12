@@ -1,0 +1,24 @@
+### Variables
+@baseUrl = http://localhost:8080
+@userId = 1
+@phraseId = 1
+
+### Upload audio file
+POST {{baseUrl}}/audio/user/{{userId}}/phrase/{{phraseId}}
+Content-Type: multipart/form-data; boundary=boundary
+
+--boundary
+Content-Disposition: form-data; name="audio_file"; filename="test.m4a"
+Content-Type: audio/m4a
+
+< ./test.m4a
+--boundary--
+
+### Download audio file as WAV
+GET {{baseUrl}}/audio/user/{{userId}}/phrase/{{phraseId}}/wav
+
+### Download audio file as M4A
+GET {{baseUrl}}/audio/user/{{userId}}/phrase/{{phraseId}}/m4a
+
+### Try to get non-existent file (should return 404)
+GET {{baseUrl}}/audio/user/999/phrase/999/wav

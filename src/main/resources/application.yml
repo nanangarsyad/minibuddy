@@ -1,0 +1,26 @@
+spring:
+  application:
+    name: minibuddy
+  r2dbc:
+    url: ${DB_URL:r2dbc:postgresql://db:5432/minibuddy_db}
+    username: ${DB_USERNAME:minibuddy}
+    password: ${DB_PASSWORD:minibuddy}
+  flyway:
+    url:  ${spring.r2dbc.url}
+    user: ${spring.r2dbc.username}
+    password: ${spring.r2dbc.password}
+    locations: classpath:db/migration
+    baseline-on-migrate: true
+    validate-on-migrate: true
+
+server:
+  port: ${SERVER_PORT:8080}
+
+app:
+  storage:
+    basePath: audio_storage
+
+logging:
+  level:
+    com.example.minibuddy: INFO
+    org.springframework.web: INFO
