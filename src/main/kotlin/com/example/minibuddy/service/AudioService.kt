@@ -23,7 +23,7 @@ class AudioService(
     private val userRepository: UserRepository,
     private val phraseRepository: PhraseRepository,
 ) {
-    private val conversionDispatcher = Dispatchers.IO
+    private val conversionDispatcher = Dispatchers.Default
 
     private suspend fun validateUserAndPhrase(userId: Long, phraseId: Long) {
         val userExists = userRepository.existsById(userId).awaitSingle()
@@ -38,16 +38,18 @@ class AudioService(
         validateUserAndPhrase(userId, phraseId)
         val tempFilename = "${userId}_${phraseId}_${System.currentTimeMillis()}.m4a"
         val tempPath = storageService.store(filePart, tempFilename)
-        val convertedFile = audioConversionService.convertM4aToWav(tempPath.toFile())
-        tempPath.toFile().delete()
-
-        val audioFile = AudioFile(
-            userId = userId,
-            phraseId = phraseId,
-            filePath = convertedFile.absolutePath
-        )
-
-        return audioFileRepository.save(audioFile).awaitSingle()
+        
+        return try {
+            val convertedFile = audioConversionService.convertM4aToWav(tempPath.toFile())
+            val audioFile = AudioFile(
+                userId = userId,
+                phraseId = phraseId,
+                filePath = convertedFile.absolutePath
+            )
+            audioFileRepository.save(audioFile).awaitSingle()
+        } finally {
+            tempPath.toFile().delete()
+        }
     }
 
     suspend fun retrieveAudioStream(userId: Long, phraseId: Long, requestedFormat: String): Flux<DataBuffer> {
